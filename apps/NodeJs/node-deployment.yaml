@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-app
+  namespace: default
+  labels:
+    app: nodejs-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs-app
+    spec:
+      containers:
+      - name: nodejs
+        # image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/nodejs-app:latest
+        image: nginx:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 3000
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /ready
+        #     port: 3000
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 5
+        #   timeoutSeconds: 3
+        #   failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-app
+  namespace: default
+  labels:
+    app: nodejs-app
+spec:
+  type: ClusterIP
+  selector:
+    app: nodejs-app
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
