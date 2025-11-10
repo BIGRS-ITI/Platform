@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: taskmanager
+data:
+  # Application Settings
+  NODE_ENV: "production"
+  PORT: "3000"
+  
+  # RDS Database Configuration
+  # TODO: Update DB_HOST with actual RDS endpoint after terraform apply
+  # Run: terraform -chdir=infrastructure/terraform/environment/dev output rds_endpoint
+  # Format: bigrs-rds.xxxxxxxxxx.us-east-1.rds.amazonaws.com
+  DB_HOST: "REPLACE_WITH_RDS_ENDPOINT"  # e.g., bigrs-rds.xxxxx.us-east-1.rds.amazonaws.com
+  DB_PORT: "3306"
+  DB_USER: "admin"  # From RDS module
+  DB_NAME: "mydb"   # From RDS module
+  
+  # Redis Configuration (internal cluster service)
+  REDIS_HOST: "redis.taskmanager.svc.cluster.local"
+  REDIS_PORT: "6379"
+  
+  # Cache Settings
+  CACHE_TTL: "300"
+  
+  # CORS Settings
+  FRONTEND_URL: "http://frontend.taskmanager.svc.cluster.local"
