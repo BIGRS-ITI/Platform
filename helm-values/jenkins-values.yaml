@@ -20,16 +20,13 @@ controller:
   javaOpts: "-Xms512m -Xmx2048m"
 
   installPlugins:
-    - kubernetes:4253.v7700d91739e5
-    - workflow-aggregator:600.vb_57cdd26fdd7
-    - git:5.5.2
-    - configuration-as-code:1909.vb_b_f7d0c4a_b_c9
-    - pipeline-utility-steps:2.16.2
-    - credentials-binding:677.vdc9d38cb_254d
-    - kubernetes-credentials-provider:1.262.v2670ef7ea_0c5
-    - google-oauth-plugin:1.0.14
-    - aws-java-sdk:1.12.730-430.vf34161f2f5a6
-    - docker-commons:439.vf46b_7fa_3b_54a
+  - kubernetes
+  - workflow-aggregator
+  - git
+  - configuration-as-code
+  - pipeline-utility-steps
+  - credentials-binding
+  - kubernetes-credentials-provider
 
   numExecutors: 2
 
