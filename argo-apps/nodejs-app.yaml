@@ -18,11 +18,11 @@ spec:
   source:
     repoURL: https://github.com/BIGRS-ITI/Platform.git
     targetRevision: main
-    path: apps/NodeJs
+    path: apps/nodejs-app
   
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: nodejs-app
   
   syncPolicy:
     automated:
