@@ -1,0 +1,16 @@
+installCRDs: true  # Ensure CRDs are installed automatically
+replicaCount: 2
+
+prometheus:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+webhook:
+  timeoutSeconds: 10
+
+securityContext:
+  fsGroup: 1001
