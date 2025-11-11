@@ -33,7 +33,6 @@ controller:
   installPlugins:
     - kubernetes
     - workflow-aggregator
-    - credentials:1389.vd7a_b_f5fa_50a_2
     - git
     - configuration-as-code
     - pipeline-utility-steps
