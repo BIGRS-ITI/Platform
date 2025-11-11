@@ -35,7 +35,7 @@ controller:
     - git:5.5.2
     - configuration-as-code:1873.vea_5814ca_9c93
     - pipeline-utility-steps:2.18.0
-    - credentials:1381.vb12b8ddb94a8
+    - credentials:1371.vfee6b095f0a_3
     - kubernetes-credentials-provider:1.273.v15e69b_55ea_8e
 
   # Number of executors on master (0 = agents only)
