@@ -22,7 +22,7 @@ spec:
       containers:
       - name: backend
         # Image will be updated by ArgoCD Image Updater
-        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app:backend-15
+        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app:backend-latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
