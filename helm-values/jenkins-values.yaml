@@ -1,16 +1,23 @@
+# helm-values/jenkins-values.yaml
+# Fixed Jenkins Helm Chart Values
+
 controller:
-  # Admin credentials (auto-generated)
+  # Admin credentials
   admin:
     createSecret: true
     username: "admin"
-    # password: ""  
+    # password will be auto-generated
 
   serviceAccount:
     create: true
     name: jenkins
 
-  image: "jenkins/jenkins"
-  tag: "2.462.3-jdk17"
+  # ✅ CORRECT: image as object with registry, repository, tag
+  image:
+    registry: "docker.io"
+    repository: "jenkins/jenkins"
+    tag: "2.462.3-jdk17"
+    pullPolicy: "IfNotPresent"
 
   resources:
     requests:
@@ -22,17 +29,20 @@ controller:
 
   javaOpts: "-Xms512m -Xmx2048m"
 
+  # Plugins to install
   installPlugins:
-  - kubernetes
-  - workflow-aggregator
-  - git
-  - configuration-as-code
-  - pipeline-utility-steps
-  - credentials-binding
-  - kubernetes-credentials-provider
+    - kubernetes:4306.vc91e951ea_eb_d
+    - workflow-aggregator:600.vb_57cdd26fdd7
+    - git:5.5.2
+    - configuration-as-code:1873.vea_5814ca_9c93
+    - pipeline-utility-steps:2.18.0
+    - credentials-binding:681.vf91669a_32e45
+    - kubernetes-credentials-provider:1.273.v15e69b_55ea_8e
 
-  numExecutors: 2
+  # Number of executors on master (0 = agents only)
+  numExecutors: 0
 
+  # Jenkins Configuration as Code
   JCasC:
     defaultConfig: true
     configScripts:
@@ -49,6 +59,7 @@ controller:
                 namespace: "jenkins"
                 jenkinsUrl: "http://jenkins:8080"
                 containerCapStr: "10"
+                maxRequestsPerHostStr: "32"
                 templates:
                   - name: "kaniko-agent"
                     namespace: "jenkins"
@@ -63,12 +74,12 @@ controller:
                         resourceRequestMemory: "256Mi"
                         resourceLimitCpu: "500m"
                         resourceLimitMemory: "512Mi"
+                        alwaysPullImage: false
 
                       - name: "kaniko"
                         image: "gcr.io/kaniko-project/executor:latest"
                         ttyEnabled: true
-                        command: ""
-                        args: ""
+                        alwaysPullImage: false
                         resourceRequestCpu: "500m"
                         resourceRequestMemory: "512Mi"
                         resourceLimitCpu: "2000m"
@@ -82,14 +93,70 @@ controller:
                         secret:
                           secretName: regcred
 
-persistence:
-  enabled: true
-  storageClass: "gp2"
-  accessMode: "ReadWriteOnce"
-  size: "8Gi"
+  # Persistence for Jenkins home
+  persistence:
+    enabled: true
+    size: "8Gi"
+    storageClassName: "gp2"
+    accessMode: "ReadWriteOnce"
+    annotations: {}
+    labels: {}
+    # If you want to use an existing PVC:
+    # existingClaim: "jenkins-home"
 
+  # Security context
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    fsGroup: 1000
+
+  # Health checks
+  livenessProbe:
+    httpGet:
+      path: "/login"
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+
+  readinessProbe:
+    httpGet:
+      path: "/login"
+      port: http
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# Agent configuration
+agent:
+  # Agent image
+  image:
+    repository: "jenkins/inbound-agent"
+    tag: "latest"
+
+# RBAC
+rbac:
+  create: true
+
+# Service configuration
+service:
+  type: "ClusterIP"
+  port: 8080
+  targetPort: 8080
+  agentListenerPort: 50000
+
+# Network policy
 networkPolicy:
   enabled: false
 
-rbac:
-  create: true
+# Ingress (optional - for external access)
+ingress:
+  enabled: false
+  # hostname: jenkins.bigrs.local
+  # tls:
+  #   - secretName: jenkins-tls
+  #     hosts:
+  #       - jenkins.bigrs.local
