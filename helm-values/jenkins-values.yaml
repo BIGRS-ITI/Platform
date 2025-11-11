@@ -42,6 +42,10 @@ controller:
   # Number of executors on master (0 = agents only)
   numExecutors: 0
 
+  startupProbe:
+    failureThreshold: 120
+    periodSeconds: 5
+  
   # Jenkins Configuration as Code
   JCasC:
     defaultConfig: true
