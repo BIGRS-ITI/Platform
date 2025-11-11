@@ -21,7 +21,7 @@ config:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
-      credentials: ""
+      credentials: ecr:aws
       default: true
 
 # Logging Configuration
@@ -71,5 +71,5 @@ extraArgs: []
 
 # Extra Environment Variables
 extraEnv: []
-#  - name: AWS_REGION
-#    value: us-east-1
+ - name: AWS_REGION
+   value: us-east-1
