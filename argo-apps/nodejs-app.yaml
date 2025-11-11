@@ -4,11 +4,16 @@ metadata:
   name: nodejs-app
   namespace: argocd
   annotations:
-    # Image updater annotations
-    argocd-image-updater.argoproj.io/image-list: nodejs=608713827966.dkr.ecr.us-east-1.amazonaws.com/nodejs-app
-    argocd-image-updater.argoproj.io/nodejs.update-strategy: latest
-    argocd-image-updater.argoproj.io/nodejs.allow-tags: regexp:^[0-9]+\.[0-9]+\.[0-9]+$
-    # Optional: write back method (git or argocd)
+    argocd-image-updater.argoproj.io/image-list: |
+      backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app:backend-latest,
+      frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app:frontend-latest
+
+    argocd-image-updater.argoproj.io/backend.update-strategy: latest
+    argocd-image-updater.argoproj.io/frontend.update-strategy: latest
+
+    argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^backend-[0-9]+$
+    argocd-image-updater.argoproj.io/frontend.allow-tags: regexp:^frontend-[0-9]+$
+
     argocd-image-updater.argoproj.io/write-back-method: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
