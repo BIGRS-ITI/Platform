@@ -4,6 +4,7 @@ metadata:
   name: jenkins
   namespace: argocd
   annotations:
+    argocd.argoproj.io/sync-wave: "4"
     argocd.argoproj.io/health-check: "jenkins.io/v1alpha2/Jenkins"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
