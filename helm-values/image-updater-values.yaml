@@ -14,16 +14,11 @@ config:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
+      credentials: pullsecret:argocd/ecr-credentials 
       default: true
 
 logLevel: info
 interval: 2m
-
-extraEnv:
-  - name: AWS_REGION
-    value: us-east-1
-  - name: AWS_DEFAULT_REGION
-    value: us-east-1
 
 resources:
   requests:
@@ -48,3 +43,48 @@ image:
   repository: quay.io/argoprojlabs/argocd-image-updater
   pullPolicy: IfNotPresent
   tag: "v0.14.0"
+
+extraEnv:
+  - name: AWS_REGION
+    value: us-east-1
+
+# Sidecar container to refresh ECR token
+extraContainers:
+  - name: ecr-token-refresher
+    image: amazon/aws-cli:2.13.25
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          echo "Refreshing ECR token..."
+          
+          # Get ECR token
+          TOKEN=$(aws ecr get-authorization-token \
+            --region us-east-1 \
+            --output text \
+            --query 'authorizationData[0].authorizationToken')
+          
+          # Create Docker config secret
+          kubectl create secret docker-registry ecr-credentials \
+            --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
+            --docker-username=AWS \
+            --docker-password=$(echo $TOKEN | base64 -d | cut -d: -f2) \
+            --namespace=argocd \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          echo "ECR token refreshed at $(date)"
+          
+          # Sleep for 6 hours (tokens valid for 12 hours)
+          sleep 21600
+        done
+    env:
+      - name: AWS_REGION
+        value: us-east-1
+    resources:
+      requests:
+        cpu: "10m"
+        memory: "32Mi"
+      limits:
+        cpu: "50m"
+        memory: "64Mi"
