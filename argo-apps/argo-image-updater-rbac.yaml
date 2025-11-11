@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/BIGRS-ITI/Platform.git
     targetRevision: main
-    path: apps/argocd-image-updater
+    path: apps/argo-image-updater
   
   destination:
     server: https://kubernetes.default.svc
