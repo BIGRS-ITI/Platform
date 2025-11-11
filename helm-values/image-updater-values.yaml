@@ -1,14 +1,8 @@
-# ArgoCD Image Updater Helm Values
-# Managed by ArgoCD
-
-# Service Account Configuration
 serviceAccount:
   create: true
   name: argocd-image-updater
-  annotations:
-    eks.amazonaws.com/role-arn: "arn:aws:iam::608713827966:role/bigrs-cluster-argo-image-updater-role"
+  annotations: {}
 
-# ArgoCD Connection Configuration
 config:
   argocd:
     grpcWeb: true
@@ -16,26 +10,21 @@ config:
     insecure: true
     plaintext: true
   
-  # ECR Registry Configuration
   registries:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
       default: true
 
-# Logging Configuration
-logLevel: debug
-
-# Update Interval
+logLevel: info
 interval: 2m
 
-# Metrics Configuration
-metrics:
-  enabled: true
-  serviceMonitor:
-    enabled: false
+extraEnv:
+  - name: AWS_REGION
+    value: us-east-1
+  - name: AWS_DEFAULT_REGION
+    value: us-east-1
 
-# Resource Limits
 resources:
   requests:
     memory: "128Mi"
@@ -44,12 +33,10 @@ resources:
     memory: "256Mi"
     cpu: "200m"
 
-# Pod Security Context
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 1000
 
-# Security Context
 securityContext:
   allowPrivilegeEscalation: false
   capabilities:
@@ -57,18 +44,7 @@ securityContext:
       - ALL
   readOnlyRootFilesystem: true
 
-# Image Configuration
 image:
   repository: quay.io/argoprojlabs/argocd-image-updater
   pullPolicy: IfNotPresent
-  tag: ""  # Uses chart appVersion by default
-
-# Extra Arguments
-extraArgs: []
-#  - --disable-kubernetes
-#  - --interval=5m
-
-# Extra Environment Variables
-extraEnv: 
- - name: AWS_REGION
-   value: us-east-1
+  tag: "v0.14.0"

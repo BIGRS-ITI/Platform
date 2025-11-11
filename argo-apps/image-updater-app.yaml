@@ -15,7 +15,7 @@ spec:
     # Source 1: Helm Chart from ArgoProj repo
     - repoURL: https://argoproj.github.io/argo-helm
       chart: argocd-image-updater
-      targetRevision: 0.11.0
+      targetRevision: 0.14.0
       helm:
         releaseName: argocd-image-updater
         valueFiles:

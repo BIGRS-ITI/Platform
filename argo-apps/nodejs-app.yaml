@@ -18,6 +18,9 @@ metadata:
     argocd-image-updater.argoproj.io/backend.force-update: "true"
     argocd-image-updater.argoproj.io/frontend.force-update: "true"
 
+    argocd-image-updater.argoproj.io/backend.ignore-tags: backend-latest
+    argocd-image-updater.argoproj.io/frontend.ignore-tags: frontend-latest
+    
     argocd-image-updater.argoproj.io/write-back-method: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
