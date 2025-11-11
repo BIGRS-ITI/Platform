@@ -21,7 +21,7 @@ config:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
-      credentials: pullsecret:argocd/ecr-credentials
+      credentials: ""
       default: true
 
 # Logging Configuration

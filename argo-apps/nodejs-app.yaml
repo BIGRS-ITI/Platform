@@ -5,6 +5,10 @@ metadata:
   namespace: argocd
   annotations:
     argocd-image-updater.argoproj.io/image-list: backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app,frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app
+    argocd-image-updater.argoproj.io/backend.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app
+    argocd-image-updater.argoproj.io/backend.kustomize.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app
+    argocd-image-updater.argoproj.io/frontend.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app
+    argocd-image-updater.argoproj.io/frontend.kustomize.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/backend.allow-tags: regexp:^backend-(latest|[0-9]+)$
