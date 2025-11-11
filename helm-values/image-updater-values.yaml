@@ -70,6 +70,6 @@ extraArgs: []
 #  - --interval=5m
 
 # Extra Environment Variables
-extraEnv: []
+extraEnv: 
  - name: AWS_REGION
    value: us-east-1
