@@ -1,5 +1,6 @@
 serviceAccount:
-  create: true
+  # Don't create - will be created by RBAC manifest
+  create: false
   name: argocd-image-updater
   annotations: {}
 
@@ -14,11 +15,16 @@ config:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
-      credentials: pullsecret:argocd/ecr-credentials 
+      credentials: pullsecret:argocd/ecr-credentials
       default: true
 
 logLevel: info
 interval: 2m
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: false
 
 resources:
   requests:
@@ -31,6 +37,7 @@ resources:
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 1000
+  fsGroup: 1000
 
 securityContext:
   allowPrivilegeEscalation: false
@@ -44,11 +51,16 @@ image:
   pullPolicy: IfNotPresent
   tag: "v0.14.0"
 
+extraArgs:
+  - --health-port=8080
+  - --metrics-port=8081
+
 extraEnv:
   - name: AWS_REGION
     value: us-east-1
+  - name: AWS_DEFAULT_REGION
+    value: us-east-1
 
-# Sidecar container to refresh ECR token
 extraContainers:
   - name: ecr-token-refresher
     image: amazon/aws-cli:2.13.25
@@ -56,35 +68,93 @@ extraContainers:
       - sh
       - -c
       - |
-        while true; do
-          echo "Refreshing ECR token..."
+        echo "=== ECR Token Refresher Sidecar Started ==="
+        
+        # Function to refresh token
+        refresh_token() {
+          echo "[$(date '+%Y-%m-%d %H:%M:%S')] Fetching ECR authorization token..."
           
-          # Get ECR token
+          # Get ECR token using Pod Identity
           TOKEN=$(aws ecr get-authorization-token \
             --region us-east-1 \
             --output text \
-            --query 'authorizationData[0].authorizationToken')
+            --query 'authorizationData[0].authorizationToken' 2>&1)
           
-          # Create Docker config secret
+          if [ $? -ne 0 ] || [ -z "$TOKEN" ]; then
+            echo "ERROR: Failed to get ECR token"
+            echo "Details: $TOKEN"
+            return 1
+          fi
+          
+          # Decode token to extract password
+          PASSWORD=$(echo "$TOKEN" | base64 -d | cut -d: -f2)
+          
+          if [ -z "$PASSWORD" ]; then
+            echo "ERROR: Failed to decode ECR token"
+            return 1
+          fi
+          
+          # Create/update Kubernetes secret
           kubectl create secret docker-registry ecr-credentials \
             --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
             --docker-username=AWS \
-            --docker-password=$(echo $TOKEN | base64 -d | cut -d: -f2) \
+            --docker-password="$PASSWORD" \
             --namespace=argocd \
             --dry-run=client -o yaml | kubectl apply -f -
           
-          echo "ECR token refreshed at $(date)"
+          if [ $? -eq 0 ]; then
+            echo "SUCCESS: ECR credentials secret updated"
+            return 0
+          else
+            echo "ERROR: Failed to update Kubernetes secret"
+            return 1
+          fi
+        }
+        
+        # Initial token fetch (with retries)
+        echo "Performing initial ECR token fetch..."
+        RETRY=0
+        MAX_RETRIES=5
+        
+        while [ $RETRY -lt $MAX_RETRIES ]; do
+          if refresh_token; then
+            echo "Initial token fetch successful"
+            break
+          fi
           
-          # Sleep for 6 hours (tokens valid for 12 hours)
-          sleep 21600
+          RETRY=$((RETRY + 1))
+          if [ $RETRY -lt $MAX_RETRIES ]; then
+            echo "Retry $RETRY/$MAX_RETRIES in 10 seconds..."
+            sleep 10
+          else
+            echo "FATAL: Failed after $MAX_RETRIES attempts"
+            exit 1
+          fi
+        done
+        
+        # Continuous refresh loop (every 6 hours)
+        echo "Starting continuous refresh loop (every 6 hours)..."
+        while true; do
+          sleep 21600  # 6 hours (ECR tokens valid for 12 hours)
+          refresh_token || echo "Token refresh failed, will retry in 6 hours"
         done
     env:
       - name: AWS_REGION
         value: us-east-1
+      - name: AWS_DEFAULT_REGION
+        value: us-east-1
     resources:
       requests:
         cpu: "10m"
-        memory: "32Mi"
+        memory: "64Mi"
       limits:
         cpu: "50m"
-        memory: "64Mi"
+        memory: "128Mi"
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
