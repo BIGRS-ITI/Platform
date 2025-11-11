@@ -133,7 +133,8 @@ controller:
   persistence:
     enabled: true
     existingClaim: ""
-    storageClass: "gp3"
+    # storageClass: "gp3"
+    storageClass: "gp2"
     size: "20Gi"
     accessMode: "ReadWriteOnce"
 
