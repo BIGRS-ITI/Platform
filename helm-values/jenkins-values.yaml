@@ -31,10 +31,15 @@ controller:
   healthProbesStartupPeriodSeconds: 10
   
 
-  additionalPlugins:
-    - kubernetes:latest
-    - blueocean:latest
-    - job-dsl:latest
+  # Plugins to install
+  installLatestPlugins: true
+  installPlugins:
+    - kubernetes
+    - workflow-aggregator
+    - git
+    - configuration-as-code
+    - pipeline-utility-steps
+    - kubernetes-credentials-provider
   
   # Jenkins Configuration as Code
   JCasC:
