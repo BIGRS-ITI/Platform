@@ -36,7 +36,6 @@ controller:
     - git
     - configuration-as-code
     - pipeline-utility-steps
-    - credentials
     - kubernetes-credentials-provider
 
 
