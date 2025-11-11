@@ -41,6 +41,35 @@ controller:
     - pipeline-utility-steps
     - kubernetes-credentials-provider
   
+  healthProbes: true
+
+  # Startup Probe
+  startupProbe:
+    httpGet:
+      path: /
+      port: http
+    failureThreshold: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+
+  # Liveness Probe
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 60
+    failureThreshold: 5
+    periodSeconds: 10
+
+  # Readiness Probe
+  readinessProbe:
+    httpGet:
+      path: /login
+      port: http
+    initialDelaySeconds: 60
+    failureThreshold: 3
+    periodSeconds: 10
+
   # Jenkins Configuration as Code
   JCasC:
     defaultConfig: true
