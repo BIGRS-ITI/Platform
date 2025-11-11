@@ -9,7 +9,6 @@ controller:
     create: true
     name: jenkins
 
-  controller:
   image: "jenkins/jenkins"
   tag: "2.462.3-jdk17"
 
