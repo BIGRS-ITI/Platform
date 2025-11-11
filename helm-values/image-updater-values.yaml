@@ -1,6 +1,5 @@
 serviceAccount:
-  # Don't create - will be created by RBAC manifest
-  create: false
+  create: true
   name: argocd-image-updater
   annotations: {}
 
