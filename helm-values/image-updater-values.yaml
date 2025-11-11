@@ -5,8 +5,8 @@
 serviceAccount:
   create: true
   name: argocd-image-updater
-  annotations: {}
-    # eks.amazonaws.com/role-arn: "arn:aws:iam::608713827966:role/bigrs-cluster-argo-image-updater-role"
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::608713827966:role/bigrs-cluster-argo-image-updater-role"
 
 # ArgoCD Connection Configuration
 config:
@@ -21,7 +21,6 @@ config:
     - name: ecr
       api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com
       prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com
-      credentials: pullsecret:argocd/ecr-credentials
       default: true
 
 # Logging Configuration
