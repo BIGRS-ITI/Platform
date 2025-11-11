@@ -18,6 +18,7 @@ spec:
         app: frontend
         tier: web
     spec:
+      serviceAccountName: nodejs-app
       containers:
       - name: frontend
         # Image will be updated by ArgoCD Image Updater

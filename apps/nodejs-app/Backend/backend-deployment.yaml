@@ -18,6 +18,7 @@ spec:
         app: backend
         tier: api
     spec:
+      serviceAccountName: nodejs-app
       containers:
       - name: backend
         # Image will be updated by ArgoCD Image Updater
