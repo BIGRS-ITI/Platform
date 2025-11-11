@@ -16,11 +16,9 @@ metadata:
   labels:
     app.kubernetes.io/name: ecr-token-refresher
 rules:
-  # Allow creating secrets
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["create"]
-  # Allow updating the specific ECR credentials secret
   - apiGroups: [""]
     resources: ["secrets"]
     resourceNames: ["ecr-credentials"]
@@ -54,7 +52,7 @@ metadata:
     app.kubernetes.io/name: ecr-token-refresher
     app.kubernetes.io/component: init
 spec:
-  ttlSecondsAfterFinished: 300  
+  ttlSecondsAfterFinished: 300
   backoffLimit: 5
   template:
     metadata:
@@ -67,7 +65,7 @@ spec:
       
       containers:
         - name: refresh-token
-          image: amazon/aws-cli:2.13.25
+          image: alpine:3.19
           command:
             - sh
             - -c
@@ -77,20 +75,40 @@ spec:
               echo "=== Initial ECR Token Refresh ==="
               echo "Timestamp: $(date)"
               
+              # Install dependencies
+              echo "Installing dependencies..."
+              apk add --no-cache \
+                python3 \
+                py3-pip \
+                curl \
+                unzip \
+                kubectl \
+                bash
+              
+              # Install AWS CLI v2
+              echo "Installing AWS CLI v2..."
+              cd /tmp
+              curl -sL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+              unzip -q awscliv2.zip
+              ./aws/install
+              
+              # Verify AWS CLI
+              aws --version
+              
               # Wait for Pod Identity to be ready
-              echo "Waiting 10 seconds for Pod Identity..."
-              sleep 10
+              echo "Waiting 15 seconds for Pod Identity..."
+              sleep 15
               
               # Test AWS credentials
-              echo "Testing AWS credentials..."
+              echo "Testing AWS credentials via Pod Identity..."
               aws sts get-caller-identity
               
               if [ $? -ne 0 ]; then
-                echo "FATAL: Cannot get AWS credentials via Pod Identity"
+                echo "❌ FATAL: Cannot get AWS credentials via Pod Identity"
                 exit 1
               fi
               
-              echo "Pod Identity working"
+              echo "✅ Pod Identity working correctly"
               
               # Get ECR authorization token
               echo "Fetching ECR authorization token..."
@@ -100,26 +118,28 @@ spec:
                 --query 'authorizationData[0].authorizationToken')
               
               if [ -z "$TOKEN" ]; then
-                echo "FATAL: Failed to get ECR token"
+                echo "❌ FATAL: Failed to get ECR token"
                 exit 1
               fi
               
-              echo "ECR token retrieved (length: ${#TOKEN} chars)"
+              echo "✅ ECR token retrieved (${#TOKEN} characters)"
               
               # Decode token to extract password
               PASSWORD=$(echo "$TOKEN" | base64 -d | cut -d: -f2)
               
               if [ -z "$PASSWORD" ]; then
-                echo "FATAL: Failed to decode token"
+                echo "❌ FATAL: Failed to decode token"
                 exit 1
               fi
               
-              echo "Token decoded (password length: ${#PASSWORD} chars)"
+              echo "✅ Token decoded (password: ${#PASSWORD} characters)"
               
               # Delete existing secret if exists
+              echo "Removing old secret if exists..."
               kubectl delete secret ecr-credentials -n argocd --ignore-not-found=true
               
               # Create Kubernetes secret
+              echo "Creating ECR credentials secret..."
               kubectl create secret docker-registry ecr-credentials \
                 --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
                 --docker-username=AWS \
@@ -127,16 +147,21 @@ spec:
                 --namespace=argocd
               
               if [ $? -eq 0 ]; then
-                echo "SUCCESS: ECR credentials secret created"
+                echo ""
+                echo "✅ ============================================"
+                echo "✅ SUCCESS: ECR credentials secret created!"
+                echo "✅ ============================================"
                 echo "Secret name: ecr-credentials"
                 echo "Namespace: argocd"
-                echo "Timestamp: $(date)"
+                echo "Created at: $(date)"
+                echo ""
                 
-                # Verify secret was created
-                kubectl get secret ecr-credentials -n argocd
+                # Verify secret
+                kubectl get secret ecr-credentials -n argocd -o jsonpath='{.metadata.creationTimestamp}'
+                echo ""
                 exit 0
               else
-                echo "FATAL: Failed to create secret"
+                echo "❌ FATAL: Failed to create secret"
                 exit 1
               fi
           
@@ -145,23 +170,25 @@ spec:
               value: us-east-1
             - name: AWS_DEFAULT_REGION
               value: us-east-1
+            - name: AWS_EC2_METADATA_DISABLED
+              value: "false"
           
           resources:
             requests:
-              cpu: "50m"
-              memory: "128Mi"
-            limits:
               cpu: "100m"
               memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
+            runAsNonRoot: false  # Need root to install packages
+            runAsUser: 0
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
 
 ---
 # CronJob - Refreshes token every 6 hours
@@ -174,14 +201,14 @@ metadata:
     app.kubernetes.io/name: ecr-token-refresher
     app.kubernetes.io/component: cronjob
 spec:
-  schedule: "0 */6 * * *"  # Every 6 hours (at :00 minutes)
+  schedule: "0 */6 * * *"  # Every 6 hours
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
-  concurrencyPolicy: Forbid  # Don't allow concurrent jobs
+  concurrencyPolicy: Forbid
   
   jobTemplate:
     spec:
-      ttlSecondsAfterFinished: 3600  # Clean up after 1 hour
+      ttlSecondsAfterFinished: 3600
       backoffLimit: 3
       
       template:
@@ -195,7 +222,7 @@ spec:
           
           containers:
             - name: refresh-token
-              image: amazon/aws-cli:2.13.25
+              image: alpine:3.19
               command:
                 - sh
                 - -c
@@ -205,15 +232,23 @@ spec:
                   echo "=== Scheduled ECR Token Refresh ==="
                   echo "Timestamp: $(date)"
                   
-                  # Get ECR authorization token
-                  echo "Fetching ECR authorization token..."
+                  # Install dependencies
+                  apk add --no-cache python3 py3-pip curl unzip kubectl bash >/dev/null 2>&1
+                  
+                  # Install AWS CLI v2
+                  cd /tmp
+                  curl -sL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+                  unzip -q awscliv2.zip
+                  ./aws/install >/dev/null 2>&1
+                  
+                  # Get ECR token
                   TOKEN=$(aws ecr get-authorization-token \
                     --region us-east-1 \
                     --output text \
                     --query 'authorizationData[0].authorizationToken')
                   
                   if [ -z "$TOKEN" ]; then
-                    echo "ERROR: Failed to get ECR token"
+                    echo "❌ ERROR: Failed to get ECR token"
                     exit 1
                   fi
                   
@@ -221,7 +256,7 @@ spec:
                   PASSWORD=$(echo "$TOKEN" | base64 -d | cut -d: -f2)
                   
                   if [ -z "$PASSWORD" ]; then
-                    echo "ERROR: Failed to decode token"
+                    echo "❌ ERROR: Failed to decode token"
                     exit 1
                   fi
                   
@@ -235,11 +270,9 @@ spec:
                     --namespace=argocd
                   
                   if [ $? -eq 0 ]; then
-                    echo "SUCCESS: ECR credentials refreshed at $(date)"
-                    kubectl get secret ecr-credentials -n argocd -o jsonpath='{.metadata.creationTimestamp}'
-                    echo ""
+                    echo "✅ SUCCESS: ECR credentials refreshed at $(date)"
                   else
-                    echo "ERROR: Failed to refresh secret"
+                    echo "❌ ERROR: Failed to refresh secret"
                     exit 1
                   fi
               
@@ -248,20 +281,22 @@ spec:
                   value: us-east-1
                 - name: AWS_DEFAULT_REGION
                   value: us-east-1
+                - name: AWS_EC2_METADATA_DISABLED
+                  value: "false"
               
               resources:
                 requests:
-                  cpu: "50m"
-                  memory: "128Mi"
-                limits:
                   cpu: "100m"
                   memory: "256Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"
               
               securityContext:
-                runAsNonRoot: true
-                runAsUser: 1000
+                runAsNonRoot: false
+                runAsUser: 0
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
                     - ALL
-                readOnlyRootFilesystem: true
+                readOnlyRootFilesystem: false
