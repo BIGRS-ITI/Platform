@@ -40,8 +40,6 @@ controller:
     - configuration-as-code
     - pipeline-utility-steps
     - kubernetes-credentials-provider
-  
-  healthProbes: true
 
   # Startup Probe
   startupProbe:
