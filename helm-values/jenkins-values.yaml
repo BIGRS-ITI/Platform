@@ -29,7 +29,7 @@ controller:
   javaOpts: "-Xms512m -Xmx2048m"
 
   # Plugins to install
-  installLatestPlugins: false
+  installLatestPlugins: true
   installPlugins:
     - kubernetes
     - workflow-aggregator
@@ -93,9 +93,9 @@ controller:
                             mountPath: /kaniko/.docker
 
                     volumes:
-                      - name: kaniko-secret
-                        secret:
-                          secretName: regcred
+                      - secretVolume:
+                          mountPath: "/kaniko/.docker"
+                          secretName: "regcred"
 
   # Persistence for Jenkins home
   persistence:
