@@ -29,13 +29,14 @@ controller:
   javaOpts: "-Xms512m -Xmx2048m"
 
   # Plugins to install
+  installLatestPlugins: false
   installPlugins:
     - kubernetes:4306.vc91e951ea_eb_d
     - workflow-aggregator:600.vb_57cdd26fdd7
     - git:5.5.2
     - configuration-as-code:1873.vea_5814ca_9c93
     - pipeline-utility-steps:2.18.0
-    - credentials:1371.vfee6b095f0a_3
+    - credentials:1389.vd2b_9c1dfcc51
     - kubernetes-credentials-provider:1.273.v15e69b_55ea_8e
 
   # Number of executors on master (0 = agents only)
