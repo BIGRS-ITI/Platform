@@ -12,7 +12,6 @@ controller:
     create: true
     name: jenkins
 
-  # ✅ CORRECT: image as object with registry, repository, tag
   image:
     registry: "docker.io"
     repository: "jenkins/jenkins"
@@ -36,7 +35,7 @@ controller:
     - git:5.5.2
     - configuration-as-code:1873.vea_5814ca_9c93
     - pipeline-utility-steps:2.18.0
-    - credentials-binding:681.vf91669a_32e45
+    - credentials:1381.vb12b8ddb94a8
     - kubernetes-credentials-provider:1.273.v15e69b_55ea_8e
 
   # Number of executors on master (0 = agents only)
