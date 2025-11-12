@@ -13,6 +13,11 @@ spec:
   
   # Multiple sources: Helm chart + values from Git
   sources:
+
+    - repoURL: https://github.com/BIGRS-ITI/Platform.git
+      targetRevision: main
+      path: apps/pre-jenkins
+      
     # Source 1: Helm Chart from Jenkins repo
     - repoURL: https://charts.jenkins.io
       chart: jenkins
@@ -36,7 +41,7 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=false
     retry:
       limit: 5
       backoff:
