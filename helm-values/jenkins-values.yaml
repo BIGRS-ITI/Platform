@@ -2,7 +2,7 @@ controller:
   # Jenkins image configuration
   image:
     repository: jenkins/jenkins
-    tag: 2.462.3-jdk17
+    tag: 2.528.1-lts-jdk21  # Updated to latest LTS with JDK 21 for security fixes and longer support
   
   # Service configuration
   serviceType: ClusterIP
@@ -34,12 +34,14 @@ controller:
   # Plugins to install
   installLatestPlugins: true
   installPlugins:
-    - kubernetes
-    - workflow-aggregator
-    - git
-    - configuration-as-code
-    - pipeline-utility-steps
-    - kubernetes-credentials-provider
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - pipeline-utility-steps:latest
+    - kubernetes-credentials-provider:latest
+    - credentials-binding:latest
+    - git-client:latest
 
   # Startup Probe
   startupProbe:

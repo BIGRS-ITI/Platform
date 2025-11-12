@@ -16,7 +16,7 @@ spec:
     # Source 1: Helm Chart from Jenkins repo
     - repoURL: https://charts.jenkins.io
       chart: jenkins
-      targetRevision: 5.7.0
+      targetRevision: 5.8.108
       helm:
         releaseName: jenkins
         valueFiles:
