@@ -34,14 +34,14 @@ controller:
   # Plugins to install
   installLatestPlugins: true
   installPlugins:
-    - kubernetes:4308.va_4691894c567  # Latest stable version
-    - workflow-aggregator:600.vb_57cdd26fdd7  # Latest pipeline plugin
-    - git:5.7.0  # Updated git plugin with security fixes
-    - configuration-as-code:1909.vb_b_f59d59d104  # Latest JCasC
-    - pipeline-utility-steps:2.17.0
-    - kubernetes-credentials-provider:1.270.v0445f6a_a_a_234
-    - credentials-binding:690.v8e82a_6ea_5dfa_  # Updated to fix masking vulnerability
-    - git-client:6.0.0  # Updated to address file system disclosure
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
+    - pipeline-utility-steps:latest
+    - kubernetes-credentials-provider:latest
+    - credentials-binding:latest
+    - git-client:latest
 
   # Startup Probe
   startupProbe:
