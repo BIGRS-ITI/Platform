@@ -142,15 +142,15 @@ controller:
   admin:
     createSecret: true
     username: "admin"
-  
-  # Persistence
-  persistence:
-    enabled: true
-    existingClaim: ""
-    # storageClass: "gp3"
-    storageClass: "gp2"
-    size: "20Gi"
-    accessMode: "ReadWriteOnce"
+
+# Persistence - Must be at root level, not under controller
+persistence:
+  enabled: true
+  existingClaim: ""
+  # storageClass: "gp3"
+  storageClass: "gp2"
+  size: "20Gi"
+  accessMode: "ReadWriteOnce"
 
 # Service Account - EKS Pod Identity
 serviceAccount:
