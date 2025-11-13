@@ -144,6 +144,9 @@ controller:
   admin:
     createSecret: true
     username: "admin"
+    
+  nodeSelector:
+    topology.kubernetes.io/zone: us-east-1c  
 
 # Persistence - Must be at root level, not under controller
 persistence:
