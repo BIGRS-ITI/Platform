@@ -3,5 +3,4 @@ kind: Kustomization
 
 resources:
   - cluster-secretstore.yaml
-  - secrets/database-external-secret.yaml
-  - secrets/jenkins-external-secret.yaml
+  - secrets/
