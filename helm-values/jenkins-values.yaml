@@ -147,7 +147,8 @@ controller:
     
   nodeSelector:
     topology.kubernetes.io/zone: us-east-1c  
-
+  
+  priorityClassName: jenkins-priority
 # Persistence - Must be at root level, not under controller
 persistence:
   enabled: true
