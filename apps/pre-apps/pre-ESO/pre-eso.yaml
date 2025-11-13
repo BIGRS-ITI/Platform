@@ -1,6 +1,3 @@
-# ===========================================
-# Namespace for External Secrets Operator
-# ===========================================
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -9,12 +6,23 @@ metadata:
     app.kubernetes.io/name: external-secrets
     app.kubernetes.io/part-of: external-secrets-operator
 ---
-# ===========================================
-# External Secrets CRDs (from official repo)
-# ===========================================
-
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - https://raw.githubusercontent.com/external-secrets/external-secrets/main/deploy/crds/bundle.yaml
-
+# ✅ Directly reference the CRD bundle (no Kustomize nesting)
+# This will work in ArgoCD and with kubectl.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-secrets-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/external-secrets/external-secrets.git
+    path: deploy/crds
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-secrets
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
