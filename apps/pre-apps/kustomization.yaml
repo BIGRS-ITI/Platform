@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
   - ecr-token-refresher/
   - pre-jenkins/
+  - pre-ESO/
   
