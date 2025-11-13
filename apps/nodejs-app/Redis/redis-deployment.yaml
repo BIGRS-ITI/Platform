@@ -94,7 +94,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: gp2  # AWS EBS gp2 storage class
+  storageClassName: ebs-sc  # use ebs.csi
   resources:
     requests:
       storage: 5Gi
