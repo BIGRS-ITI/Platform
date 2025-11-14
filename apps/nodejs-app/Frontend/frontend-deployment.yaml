@@ -22,7 +22,8 @@ spec:
       containers:
       - name: frontend
         # Image will be updated by ArgoCD Image Updater
-        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-latest
+        # image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-latest # happy-ecr
+        image: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-latest # babers-ecr
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

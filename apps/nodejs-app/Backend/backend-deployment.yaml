@@ -21,7 +21,8 @@ spec:
       serviceAccountName: nodejs-app
       containers:
       - name: backend
-        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-15
+        # image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-15 # happy-ecr
+        image: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-15 # babers-ecr
         imagePullPolicy: Always
         ports:
           - containerPort: 3000
