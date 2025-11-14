@@ -9,6 +9,23 @@ config:
     serverAddress: "http://argocd-server.argocd.svc.cluster.local"
     insecure: true
     plaintext: true
+
+  git:
+    writeBackMethod: git
+
+    commitUser: "Argo Image Updater"
+    commitEmail: "image-updater@argocd"
+    commitMessage: "Update image {{.Image}} to {{.NewTag}}"
+
+    https:
+      - url: https://github.com/BIGRS-ITI/Platform.git
+        credentials:
+          usernameSecret:
+            name: argocd-repo-creds-github
+            key: username
+          passwordSecret:
+            name: argocd-repo-creds-github
+            key: password   
   
   registries:
     - name: ecr
