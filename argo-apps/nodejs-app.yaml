@@ -5,10 +5,14 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "6"
-    argocd-image-updater.argoproj.io/image-list: 
-      backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend,
-      frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
-    
+    argocd-image-updater.argoproj.io/image-list:
+      # babers ECR images
+      backend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend, 
+      frontend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
+      # happy ECR images
+      # backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend,
+      # frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend 
+
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
 
