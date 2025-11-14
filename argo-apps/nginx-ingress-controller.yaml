@@ -18,7 +18,7 @@ spec:
         releaseName: ingress-nginx
         valueFiles:
           - $values/helm-values/nginx-values.yaml
-        # Skip hooks initially to avoid timing issues
+        # CRITICAL: Skip schema validation
         skipCrds: false
         
     - repoURL: https://github.com/BIGRS-ITI/Platform.git
@@ -36,16 +36,16 @@ spec:
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true
-      # Use Replace instead of Apply for initial install
-      - Replace=true
-      # Disable validation during apply
+      # CRITICAL FIX: Disable server-side apply for Helm
+      - ServerSideApply=false
+      # Skip validation that causes issues
       - Validate=false
-      # Force resource updates
+      # Apply resources even if out of sync
       - ApplyOutOfSyncOnly=false
     retry:
-      limit: 10
+      limit: 15
       backoff:
-        duration: 15s
+        duration: 20s
         factor: 2
         maxDuration: 10m
   
