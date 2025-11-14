@@ -41,7 +41,9 @@ spec:
   csi:
     driver: ebs.csi.aws.com
     # volume created at us-east-1c
-    volumeHandle: vol-0cf8e04a24a63bb4b
+    # volumeHandle: vol-0cf8e04a24a63bb4b #happy-ebs
+    volumeHandle: vol-0bb3d8be2bde8d74c #babers-ebs
+    
     fsType: ext4
 
 ---
