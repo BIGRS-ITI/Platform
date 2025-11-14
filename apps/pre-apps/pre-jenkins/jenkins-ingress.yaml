@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: jenkins
+  annotations:
+    # Cert-manager annotation to automatically issue certificates
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # Nginx ingress annotations
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # Jenkins-specific annotations for large file uploads and timeouts
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    
+    # Session affinity for Jenkins
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "jenkins-session"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+  labels:
+    app: jenkins
+spec:
+  ingressClassName: nginx
+  
+  tls:
+    - hosts:
+        - jenkins.happyhosting.me
+      secretName: jenkins-happyhosting-tls
+  
+  rules:
+    - host: jenkins.happyhosting.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins
+                port:
+                  number: 8080

@@ -2,13 +2,21 @@ apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt-prod
-  namespace: cert-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   acme:
-    email: ##to be defined##
-    server: https://acme-v02.api.letsencrypt.org/directory #needs to be prod for production
+    # Let's Encrypt production server
+    server: https://acme-v02.api.letsencrypt.org/directory
+    
+    # Email for certificate expiration notifications
+    email: admin@happyhosting.me
+    
+    # Secret to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod
+    
+    # HTTP01 challenge solver using nginx ingress
     solvers:
       - http01:
           ingress:

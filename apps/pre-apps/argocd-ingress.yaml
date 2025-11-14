@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd
+  annotations:
+    # Cert-manager annotation to automatically issue certificates
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # Nginx ingress annotations for HTTPS backend
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # ArgoCD requires HTTPS backend passthrough
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "false"
+    
+    # Preserve the original Host header
+    nginx.ingress.kubernetes.io/preserve-host: "true"
+    
+    # Increase timeout for ArgoCD operations
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    
+    # WebSocket support for ArgoCD UI real-time updates
+    nginx.ingress.kubernetes.io/websocket-services: "argocd-server"
+  labels:
+    app: argocd-server
+spec:
+  ingressClassName: nginx
+  
+  tls:
+    - hosts:
+        - argo.happyhosting.me
+      secretName: argo-happyhosting-tls
+  
+  rules:
+    - host: argo.happyhosting.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 443

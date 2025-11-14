@@ -4,4 +4,5 @@ resources:
   - backend-deployment.yaml
   - configmap.yaml
   - secrets.yaml
+  - ingress.yaml
   

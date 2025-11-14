@@ -1,0 +1,43 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-api-ingress
+  namespace: taskmanager
+  annotations:
+    # Cert-manager annotation to automatically issue certificates
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # Nginx ingress annotations
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # Rate limiting (optional but recommended for APIs)
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    
+    # CORS configuration (adjust as needed for your frontend domain)
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://happyhosting.me"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+  labels:
+    app: backend
+    tier: api
+spec:
+  ingressClassName: nginx
+  
+  tls:
+    - hosts:
+        - api.happyhosting.me
+      secretName: api-happyhosting-tls
+  
+  rules:
+    - host: api.happyhosting.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 3000
