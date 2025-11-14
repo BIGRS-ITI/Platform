@@ -34,22 +34,20 @@ spec:
       allowEmpty: false
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=true
+      - ServerSideApply=false  # ⭐ Changed: Use client-side apply for Helm
+      - RespectIgnoreDifferences=true
     retry:
-      limit: 5
+      limit: 10
       backoff:
-        duration: 5s
+        duration: 10s
         factor: 2
-        maxDuration: 3m
+        maxDuration: 5m
   
   ignoreDifferences:
-    # Ignore HPA-managed replicas
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
-    
-    # Ignore auto-generated webhook certificates
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
       jqPathExpressions:
