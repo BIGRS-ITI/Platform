@@ -12,7 +12,8 @@ data:
   # TODO: Update DB_HOST with actual RDS endpoint after terraform apply
   # Run: terraform -chdir=infrastructure/terraform/environment/dev output rds_endpoint
   # Format: bigrs-rds.xxxxxxxxxx.us-east-1.rds.amazonaws.com
-  DB_HOST: "bigrs-rds.c0tmoumu0kag.us-east-1.rds.amazonaws.com"  # e.g., bigrs-rds.xxxxx.us-east-1.rds.amazonaws.com
+  # DB_HOST: "bigrs-rds.c0tmoumu0kag.us-east-1.rds.amazonaws.com"  # happy-rds
+  DB_HOST: "bigrs-rds.cql2yya6yj3q.us-east-1.rds.amazonaws.com" # babers-rds
   DB_PORT: "3306"
   DB_USER: "admin"  # From RDS module
   DB_NAME: "mydb"   # From RDS module
