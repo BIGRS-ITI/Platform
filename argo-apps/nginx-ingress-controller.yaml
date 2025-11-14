@@ -1,28 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-ingress
+  name: nginx-ingress-controller
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "3" 
+    argocd.argoproj.io/sync-wave: "3"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   
-  # Multi-source: Helm chart repository + Git repository for values
   sources:
-    # Source 1: Helm chart from official repository
     - repoURL: https://kubernetes.github.io/ingress-nginx
       chart: ingress-nginx
-      targetRevision: 4.10.1
+      targetRevision: 4.11.3
       helm:
         releaseName: ingress-nginx
-        # Reference the values file from the Git repository (second source)
         valueFiles:
           - $values/helm-values/nginx-values.yaml
 
-      # Source 2: Values file from Platform Git repo
     - repoURL: https://github.com/BIGRS-ITI/Platform.git
       targetRevision: main
       ref: values
@@ -46,9 +42,15 @@ spec:
         factor: 2
         maxDuration: 3m
   
-  # Ignore HPA-managed replica count
   ignoreDifferences:
+    # Ignore HPA-managed replicas
     - group: apps
       kind: Deployment
       jsonPointers:
         - /spec/replicas
+    
+    # Ignore auto-generated webhook certificates
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
