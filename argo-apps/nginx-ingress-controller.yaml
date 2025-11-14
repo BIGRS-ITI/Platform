@@ -5,8 +5,6 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   
@@ -31,17 +29,14 @@ spec:
     automated:
       prune: true
       selfHeal: true
-      allowEmpty: false
     syncOptions:
       - CreateNamespace=true
-      - ServerSideApply=false  # ⭐ Changed: Use client-side apply for Helm
-      - RespectIgnoreDifferences=true
     retry:
-      limit: 10
+      limit: 3
       backoff:
-        duration: 10s
+        duration: 5s
         factor: 2
-        maxDuration: 5m
+        maxDuration: 3m
   
   ignoreDifferences:
     - group: apps
