@@ -5,4 +5,5 @@ resources:
   - ecr-token-refresher/
   - pre-jenkins/
   - pre-ESO/
+  - nginx-ingress-contrller/
   
