@@ -143,7 +143,8 @@ spec:
               # Create Kubernetes secret
               echo "Creating ECR credentials secret..."
               kubectl create secret docker-registry ecr-credentials \
-                --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
+                # --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \ # happy-ecr
+                --docker-server=636078031259.dkr.ecr.us-east-1.amazonaws.com \ # babers-ecr
                 --docker-username=AWS \
                 --docker-password="$PASSWORD" \
                 --namespace=argocd
@@ -266,7 +267,8 @@ spec:
                   kubectl delete secret ecr-credentials -n argocd --ignore-not-found=true
                   
                   kubectl create secret docker-registry ecr-credentials \
-                    --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
+                    # --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \ # happy-ecr
+                    --docker-server=636078031259.dkr.ecr.us-east-1.amazonaws.com \ # babers-ecr
                     --docker-username=AWS \
                     --docker-password="$PASSWORD" \
                     --namespace=argocd
