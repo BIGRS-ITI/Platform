@@ -5,6 +5,8 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   
@@ -16,7 +18,9 @@ spec:
         releaseName: ingress-nginx
         valueFiles:
           - $values/helm-values/nginx-values.yaml
-
+        # Skip hooks initially to avoid timing issues
+        skipCrds: false
+        
     - repoURL: https://github.com/BIGRS-ITI/Platform.git
       targetRevision: main
       ref: values
@@ -29,14 +33,21 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
     syncOptions:
       - CreateNamespace=true
+      # Use Replace instead of Apply for initial install
+      - Replace=true
+      # Disable validation during apply
+      - Validate=false
+      # Force resource updates
+      - ApplyOutOfSyncOnly=false
     retry:
-      limit: 3
+      limit: 10
       backoff:
-        duration: 5s
+        duration: 15s
         factor: 2
-        maxDuration: 3m
+        maxDuration: 10m
   
   ignoreDifferences:
     - group: apps
