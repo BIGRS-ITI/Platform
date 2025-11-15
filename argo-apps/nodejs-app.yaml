@@ -26,7 +26,7 @@ metadata:
     argocd-image-updater.argoproj.io/frontend.ignore-tags: frontend-latest
 
     argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/write-back-target: "kustomization:."
+    argocd-image-updater.argoproj.io/write-back-target: "."
     
     argocd-image-updater.argoproj.io/backend.image-name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
     argocd-image-updater.argoproj.io/backend.helm.image-spec: Backend/backend-deployment.yaml:spec.template.spec.containers[0].image
