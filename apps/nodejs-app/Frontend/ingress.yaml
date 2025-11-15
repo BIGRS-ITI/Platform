@@ -13,13 +13,6 @@ metadata:
     
     # Enable gzip compression for frontend assets
     nginx.ingress.kubernetes.io/enable-gzip: "true"
-    
-    # Cache static assets
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        expires 1y;
-        add_header Cache-Control "public, immutable";
-      }
   labels:
     app: frontend
     tier: web
