@@ -20,9 +20,9 @@ spec:
         valuesFiles:
           - $values/helm-values/nginx-values.yaml
           
-    - repoURL: https://github.com/BIGRS-ITI/Platform.git
-      targetRevision: prod
-      ref: values
+    # - repoURL: https://github.com/BIGRS-ITI/Platform.git
+    #   targetRevision: prod
+    #   ref: values
           
 
   destination:
