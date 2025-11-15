@@ -5,4 +5,7 @@ resources:
   - configmap.yaml
   - secrets.yaml
   - ingress.yaml
-  
+
+images:
+  - name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
+    newTag: backend-1

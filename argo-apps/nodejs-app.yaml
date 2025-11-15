@@ -26,12 +26,12 @@ metadata:
     argocd-image-updater.argoproj.io/frontend.ignore-tags: frontend-latest
 
     argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/write-back-target: git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
 
-    argocd-image-updater.argoproj.io/backend.git-repo-path: apps/nodejs-app/Backend
-    argocd-image-updater.argoproj.io/frontend.git-repo-path: apps/nodejs-app/Frontend
+    argocd-image-updater.argoproj.io/backend.kustomize.image-name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
+    argocd-image-updater.argoproj.io/frontend.kustomize.image-name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
 
-    argocd-image-updater.argoproj.io/git-commit-message: "Update image {{.Image}} to {{.NewTag}}"
+    argocd-image-updater.argoproj.io/git-commit-message: "chore: update image {{.Image}} to {{.NewTag}}"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
