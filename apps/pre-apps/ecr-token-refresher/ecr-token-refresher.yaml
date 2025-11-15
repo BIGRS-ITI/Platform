@@ -144,7 +144,7 @@ spec:
               echo "Creating ECR credentials secret..."
               # --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com
               kubectl create secret docker-registry ecr-credentials \
-                --docker-server=636078031259.dkr.ecr.us-east-1.amazonaws.com \
+                --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
                 --docker-username=AWS \
                 --docker-password="$PASSWORD" \
                 --namespace=argocd
@@ -268,7 +268,7 @@ spec:
                   
                     # --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
                   kubectl create secret docker-registry ecr-credentials \
-                    --docker-server=636078031259.dkr.ecr.us-east-1.amazonaws.com \
+                    --docker-server=608713827966.dkr.ecr.us-east-1.amazonaws.com \
                     --docker-username=AWS \
                     --docker-password="$PASSWORD" \
                     --namespace=argocd

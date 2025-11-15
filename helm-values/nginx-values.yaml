@@ -1,12 +1,10 @@
 controller:
   replicaCount: 2
-  
-  # ServiceAccount configuration for Pod Identity
+
   serviceAccount:
     create: true
     name: ingress-nginx
-    annotations: {}  # No annotations needed for Pod Identity
-  
+
   service:
     type: LoadBalancer
     annotations:
@@ -14,56 +12,20 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
       service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-      service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: "http"
-      service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: "/healthz"
-      service.beta.kubernetes.io/aws-load-balancer-healthcheck-interval: "10"
-  
+
+  # Disable non-essential features
   metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus
-  
+    enabled: false
   admissionWebhooks:
-    enabled: true
-    failurePolicy: Fail
-  
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  
-  autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 5
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
-  
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                    - ingress-nginx
-            topologyKey: topology.kubernetes.io/zone
-  
+    enabled: false
+
   ingressClassResource:
     name: nginx
     enabled: true
     default: true
-  
+
   config:
     use-forwarded-headers: "true"
     compute-full-forwarded-for: "true"
-    ssl-protocols: "TLSv1.2 TLSv1.3"
     proxy-body-size: "10m"
+    ssl-protocols: "TLSv1.2 TLSv1.3"
