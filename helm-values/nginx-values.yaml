@@ -12,7 +12,7 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
       service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-      service.beta.kubernetes.io/aws-load-balancer-subnets: "10.0.0.0/24, 10.0.2.0/24, 10.0.4.0/24"
+      service.beta.kubernetes.io/aws-load-balancer-subnets: "subnet-089f6c8ea4288c660, subnet-04d2152d00d34a7af, subnet-05cd11b4c821581a0"
 
   # Disable non-essential features
   metrics:
