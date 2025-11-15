@@ -7,6 +7,6 @@ resources:
 - Redis/
 images:
 - name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
-  newTag: backend-9
+  newTag: backend-10
 - name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
-  newTag: frontend-9
+  newTag: frontend-10
