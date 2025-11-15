@@ -24,7 +24,7 @@ spec:
     
     # Source 2: Values file from Platform Git repo
     - repoURL: https://github.com/BIGRS-ITI/Platform.git
-      targetRevision: main
+      targetRevision: prod
       ref: values      
   
   destination:

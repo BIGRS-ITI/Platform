@@ -42,7 +42,7 @@ spec:
   
   source:
     repoURL: https://github.com/BIGRS-ITI/Platform.git
-    targetRevision: main
+    targetRevision: prod
     path: apps/nodejs-app
   
   destination:
