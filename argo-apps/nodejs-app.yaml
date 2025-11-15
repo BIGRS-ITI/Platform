@@ -6,12 +6,12 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "6"
     argocd-image-updater.argoproj.io/image-list:
-      # babers ECR images
-      backend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend, 
-      frontend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
+      # # babers ECR images
+      # backend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend, 
+      # frontend=636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
       # happy ECR images
-      # backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend,
-      # frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend 
+      backend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend,
+      frontend=608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend 
 
     argocd-image-updater.argoproj.io/backend.update-strategy: newest-build
     argocd-image-updater.argoproj.io/frontend.update-strategy: newest-build
@@ -28,10 +28,10 @@ metadata:
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/write-back-target: "kustomization:."
     
-    argocd-image-updater.argoproj.io/backend.image-name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
+    argocd-image-updater.argoproj.io/backend.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend
     argocd-image-updater.argoproj.io/backend.helm.image-spec: Backend/backend-deployment.yaml:spec.template.spec.containers[0].image
     
-    argocd-image-updater.argoproj.io/frontend.image-name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
+    argocd-image-updater.argoproj.io/frontend.image-name: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
     argocd-image-updater.argoproj.io/frontend.helm.image-spec: Frontend/frontend-deployment.yaml:spec.template.spec.containers[0].image
     
     argocd-image-updater.argoproj.io/git-commit-message: "chore: update image {{.Image}} to {{.NewTag}}"
