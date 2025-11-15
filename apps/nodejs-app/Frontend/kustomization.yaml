@@ -3,7 +3,3 @@ kind: Kustomization
 resources:
   - frontend-deployment.yaml
   - ingress.yaml
-
-images:
-  - name: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend
-    newTag: frontend-1
