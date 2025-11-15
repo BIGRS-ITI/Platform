@@ -29,10 +29,10 @@ config:
   
   registries:
     - name: ecr
-      # api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com # happy-ecr
-      # prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com # happy-ecr
-      api_url: https://636078031259.dkr.ecr.us-east-1.amazonaws.com # babers-ecr
-      prefix: 636078031259.dkr.ecr.us-east-1.amazonaws.com # babers-ecr
+      api_url: https://608713827966.dkr.ecr.us-east-1.amazonaws.com # happy-ecr
+      prefix: 608713827966.dkr.ecr.us-east-1.amazonaws.com # happy-ecr
+      # api_url: https://636078031259.dkr.ecr.us-east-1.amazonaws.com # babers-ecr
+      # prefix: 636078031259.dkr.ecr.us-east-1.amazonaws.com # babers-ecr
       credentials: pullsecret:argocd/ecr-credentials  # Created by CronJob
       default: true
 
