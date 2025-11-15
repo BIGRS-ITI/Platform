@@ -1,0 +1,4 @@
+kustomize:
+  images:
+  - 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-7
+  - 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-7
