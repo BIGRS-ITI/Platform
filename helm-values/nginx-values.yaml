@@ -3,7 +3,7 @@ controller:
   
   # ServiceAccount configuration for Pod Identity
   serviceAccount:
-    create: false
+    create: true
     name: ingress-nginx
     annotations: {}  # No annotations needed for Pod Identity
   
