@@ -16,20 +16,13 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-    
-    # Session affinity for Jenkins
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "jenkins-session"
-    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
-  labels:
-    app: jenkins
 spec:
   ingressClassName: nginx
   
   tls:
     - hosts:
         - jenkins.happyhosting.me
-      secretName: jenkins-happyhosting-tls
+      secretName: jenkins-tls
   
   rules:
     - host: jenkins.happyhosting.me

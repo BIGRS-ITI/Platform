@@ -31,11 +31,11 @@ spec:
   
   tls:
     - hosts:
-        - argo.happyhosting.me
-      secretName: argo-happyhosting-tls
+        - argocd.happyhosting.me
+      secretName: argocd-tls
   
   rules:
-    - host: argo.happyhosting.me
+    - host: argocd.happyhosting.me
       http:
         paths:
           - path: /
