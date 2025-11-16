@@ -4,6 +4,7 @@ metadata:
   name: frontend-ingress
   namespace: taskmanager
   annotations:
+    argocd.argoproj.io/sync-wave: "3"
     # Cert-manager annotation to automatically issue certificates
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     

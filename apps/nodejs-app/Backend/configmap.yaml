@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: backend-config
   namespace: taskmanager
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 data:
   # Application Settings
   NODE_ENV: "production"

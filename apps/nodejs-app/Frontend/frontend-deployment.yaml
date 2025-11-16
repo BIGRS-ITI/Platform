@@ -6,6 +6,8 @@ metadata:
   labels:
     app: frontend
     tier: web
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   replicas: 3
   selector:
@@ -85,6 +87,8 @@ metadata:
   labels:
     app: frontend
     tier: web
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   type: ClusterIP
   ports:
@@ -105,6 +109,8 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: frontend-hpa
   namespace: taskmanager
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -148,6 +154,8 @@ kind: NetworkPolicy
 metadata:
   name: allow-ingress-to-frontend
   namespace: taskmanager
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   podSelector:
     matchLabels:
@@ -166,6 +174,8 @@ kind: NetworkPolicy
 metadata:
   name: frontend-egress
   namespace: taskmanager
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   podSelector:
     matchLabels:
