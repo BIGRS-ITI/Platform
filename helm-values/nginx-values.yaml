@@ -18,7 +18,11 @@ controller:
   metrics:
     enabled: false
   admissionWebhooks:
-    enabled: false
+    enabled: true
+    patch:
+      enabled: false
+    job:
+      enabled: false
 
   ingressClassResource:
     name: nginx
