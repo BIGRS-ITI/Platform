@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: trigger-jenkins-pipeline
+  namespace: jenkins
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: trigger
+        image: curlimages/curl:7.88.1
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Waiting for Jenkins..."
+            until curl -s http://jenkins.jenkins.svc.cluster.local:8080/login > /dev/null; do
+            sleep 5
+            done
+            echo "Jenkins ready, triggering pipeline..."
+            curl -X POST http://jenkins.jenkins.svc.cluster.local:8080/job/my-pipeline/build \
+              --user admin:1121b408dba2ecfb04ab5f234bb3fb1371
+            echo "Triggered successfully!"
