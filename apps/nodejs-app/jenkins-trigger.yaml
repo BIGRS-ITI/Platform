@@ -16,10 +16,19 @@ spec:
           - |
             echo "Waiting for Jenkins..."
             until curl -s http://jenkins.jenkins.svc.cluster.local:8080/login > /dev/null; do
-            sleep 5
+              sleep 5
             done
-            echo "Jenkins ready, triggering pipeline..."
-            curl -X POST http://localhost:8080/job/codebuild/build \
-              --user admin:admin
-            echo "Triggered successfully!"
+
+            echo "Jenkins ready, fetching crumb..."
+            CRUMB=$(curl -s -u admin:11fc9eba8dd3d3f7b3abd8e0fece9afa28 \
+              http://jenkins.jenkins.svc.cluster.local:8080/crumbIssuer/api/json \
+              | jq -r '.crumb')
+
+            echo "Triggering pipeline..."
+            curl -X POST \
+              http://jenkins.jenkins.svc.cluster.local:8080/job/codebuild/build \
+              -u admin:11fc9eba8dd3d3f7b3abd8e0fece9afa28 \
+              -H "Jenkins-Crumb: $CRUMB"
+
+              echo "Triggered successfully!"
 
