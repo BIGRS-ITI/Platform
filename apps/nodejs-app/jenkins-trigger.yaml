@@ -19,6 +19,7 @@ spec:
             sleep 5
             done
             echo "Jenkins ready, triggering pipeline..."
-            curl -X POST http://jenkins.jenkins.svc.cluster.local:8080/job/my-pipeline/build \
+            curl -X POST http://localhost:8081/job/codebuild/build \
               --user admin:1121b408dba2ecfb04ab5f234bb3fb1371
             echo "Triggered successfully!"
+
