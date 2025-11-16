@@ -19,19 +19,38 @@ spec:
         tier: api
     spec:
       serviceAccountName: nodejs-app
+      
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: backend
+            tier: api
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: backend
+            tier: api
+      
       containers:
       - name: backend
-        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-1 # happy-ecr
-        # image: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-1 # babers-ecr
+        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-backend:backend-1
         imagePullPolicy: Always
         ports:
           - containerPort: 3000
             name: http
+            protocol: TCP
+        
         envFrom:
           - configMapRef:
               name: backend-config
           - secretRef:
               name: taskmanager-secrets
+        
         resources:
           requests:
             memory: "256Mi"
@@ -39,21 +58,33 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        
         livenessProbe:
           httpGet:
             path: /api/health
             port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
         readinessProbe:
           httpGet:
             path: /api/health
             port: 3000
-
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        
         volumeMounts:
         - name: logs
           mountPath: /app/logs
+      
       volumes:
       - name: logs
         emptyDir: {}
+      
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -85,8 +116,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: backend
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 3
+  maxReplicas: 6
   metrics:
   - type: Resource
     resource:
@@ -117,3 +148,64 @@ spec:
         value: 2
         periodSeconds: 30
       selectPolicy: Max
+---
+# Network Policy: Restrict MySQL Access to Backend Only
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-db-access
+  namespace: taskmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+      tier: api
+  policyTypes:
+  - Egress
+  egress:
+  # Allow backend to access MySQL RDS
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 3306  # MySQL port
+  # Allow DNS resolution
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow access to Kubernetes API
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow access to other services in namespace
+  - to:
+    - podSelector: {}
+---
+# Network Policy: Allow Frontend to Backend Communication
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: taskmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+      tier: api
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: frontend
+          tier: web
+    ports:
+    - protocol: TCP
+      port: 3000

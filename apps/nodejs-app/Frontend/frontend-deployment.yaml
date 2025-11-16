@@ -7,7 +7,7 @@ metadata:
     app: frontend
     tier: web
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: frontend
@@ -19,16 +19,36 @@ spec:
         tier: web
     spec:
       serviceAccountName: nodejs-app
+
+      topologySpreadConstraints:
+      # Spread across availability zones 
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule # (HARD requirement - must satisfy) for soft requirement use ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: frontend
+            tier: web
+      # Spread across nodes (SOFT requirement - best effort)
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: frontend
+            tier: web
+      
       containers:
       - name: frontend
         # Image will be updated by ArgoCD Image Updater
-        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-1 # happy-ecr
+        image: 608713827966.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-1
         # image: 636078031259.dkr.ecr.us-east-1.amazonaws.com/bigrs-nodejs-app-frontend:frontend-1 # babers-ecr
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: http
           protocol: TCP
+        
         resources:
           requests:
             memory: "64Mi"
@@ -36,6 +56,7 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
+        
         livenessProbe:
           httpGet:
             path: /
@@ -44,6 +65,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 3
+        
         readinessProbe:
           httpGet:
             path: /
@@ -52,6 +74,7 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 2
           failureThreshold: 3
+      
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -87,8 +110,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: frontend
-  minReplicas: 2
-  maxReplicas: 5
+  minReplicas: 3
+  maxReplicas: 6
   metrics:
   - type: Resource
     resource:
@@ -102,3 +125,73 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+      - type: Pods
+        value: 2
+        periodSeconds: 30
+      selectPolicy: Max
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-frontend
+  namespace: taskmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+      tier: web
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow traffic from anywhere
+  - ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-egress
+  namespace: taskmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+      tier: web
+  policyTypes:
+  - Egress
+  egress:
+  # Allow access to backend service
+  - to:
+    - podSelector:
+        matchLabels:
+          app: backend
+          tier: api
+    ports:
+    - protocol: TCP
+      port: 3000
+  # Allow DNS resolution (required for all network operations)
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow HTTPS for external resources (CDNs, external APIs, etc.)
+  - ports:
+    - protocol: TCP
+      port: 443
