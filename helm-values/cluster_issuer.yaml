@@ -10,7 +10,7 @@ spec:
     server: https://acme-v02.api.letsencrypt.org/directory
     
     # Email for certificate expiration notifications
-    email: admin@happyhosting.me
+    email: admin@bigrs.app
     
     # Secret to store the ACME account private key
     privateKeySecretRef:

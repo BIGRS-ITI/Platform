@@ -21,11 +21,11 @@ spec:
   
   tls:
     - hosts:
-        - jenkins.happyhosting.me
+        - jenkins.bigrs.app
       secretName: jenkins-tls
   
   rules:
-    - host: jenkins.happyhosting.me
+    - host: jenkins.bigrs.app
       http:
         paths:
           - path: /
