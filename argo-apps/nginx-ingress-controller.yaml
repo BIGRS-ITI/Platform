@@ -18,7 +18,7 @@ spec:
       targetRevision: 4.14.0
       helm:
         releaseName: ingress-nginx
-        valuesFiles:
+        valuesFile:
           - $values/helm-values/nginx-values.yaml
           # - $values/helm-values/nginx-values-tf.yaml
           
