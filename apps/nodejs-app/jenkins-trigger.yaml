@@ -3,7 +3,11 @@ kind: Job
 metadata:
   name: trigger-jenkins-pipeline
   namespace: jenkins
+  annotations:
+    argocd.argoproj.io/hook: PostSync  # Run after sync completes
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # Delete after success
 spec:
+  backoffLimit: 3
   ttlSecondsAfterFinished: 60
   template:
     spec:
