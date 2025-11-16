@@ -4,11 +4,13 @@ metadata:
   name: trigger-jenkins-pipeline
   namespace: jenkins
   annotations:
-    argocd.argoproj.io/hook: PostSync  # Run after sync completes
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded  # Delete after success
+    argocd.argoproj.io/sync-options: Prune=false  # Don't delete on sync
+    argocd.argoproj.io/compare-options: IgnoreExtraneous  # Ignore if already exists
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   backoffLimit: 3
-  ttlSecondsAfterFinished: 60
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
       restartPolicy: Never
