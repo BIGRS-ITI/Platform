@@ -62,4 +62,11 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+  - group: batch
+    kind: Job
+    name: trigger-jenkins-pipeline
+    namespace: jenkins
+    jsonPointers:
+    - /status
 
