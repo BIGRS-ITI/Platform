@@ -12,6 +12,12 @@ spec:
       containers:
       - name: trigger
         image: curlimages/curl:7.88.1
+        env:
+          - name: JENKINS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: jenkins-token
+                key: jenkins_token
         command: ["/bin/sh", "-c"]
         args:
           - |
@@ -21,14 +27,14 @@ spec:
             done
 
             echo "Jenkins ready, fetching crumb..."
-            CRUMB=$(curl -s -u admin:11fc9eba8dd3d3f7b3abd8e0fece9afa28 \
+            CRUMB=$(curl -s -u admin:$JENKINS_TOKEN \
               http://jenkins.jenkins.svc.cluster.local:8080/crumbIssuer/api/json \
               | jq -r '.crumb')
 
             echo "Triggering pipeline..."
             curl -X POST \
               http://jenkins.jenkins.svc.cluster.local:8080/job/codebuild/build \
-              -u admin:11fc9eba8dd3d3f7b3abd8e0fece9afa28 \
+              -u admin:$JENKINS_TOKEN \
               -H "Jenkins-Crumb: $CRUMB"
 
               echo "Triggered successfully!"
