@@ -78,17 +78,6 @@ controller:
   JCasC:
     defaultConfig: true
     configScripts:
-      # Security configuration
-      security: |
-        jenkins:
-          securityRealm:
-            local:
-              allowsSignup: false
-              users:
-                - id: "admin"
-          authorizationStrategy:
-            loggedInUsersCanDoAnything:
-              allowAnonymousRead: false
       github-config: |
         unclassified:
           gitHubPluginConfig:
