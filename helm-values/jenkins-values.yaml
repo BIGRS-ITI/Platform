@@ -74,19 +74,6 @@ controller:
     failureThreshold: 3
     periodSeconds: 10
 
-  additionalSecrets:
-    jenkins-admin-password:
-      stringData:
-        password: "{{ randAlphaNum 32 }}"
-
-  # Pass the generated password into Jenkins ENV
-  containerEnv:
-    - name: JENKINS_ADMIN_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: jenkins-admin-password
-          key: password
-
   # Jenkins Configuration as Code
   JCasC:
     defaultConfig: true
